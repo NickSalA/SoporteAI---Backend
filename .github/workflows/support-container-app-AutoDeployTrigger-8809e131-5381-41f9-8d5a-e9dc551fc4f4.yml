@@ -1,4 +1,4 @@
-name: Trigger auto deployment for support-backend
+name: Trigger auto deployment for support-container-app
 
 # When this action will be executed
 on:
@@ -8,7 +8,7 @@ on:
       [ main ]
     paths:
     - '**'
-    - '.github/workflows/support-backend-AutoDeployTrigger-98e56091-ac3e-4cf8-985a-a9cc77f6c5e0.yml'
+    - '.github/workflows/support-container-app-AutoDeployTrigger-8809e131-5381-41f9-8d5a-e9dc551fc4f4.yml'
 
   # Allow manual trigger 
   workflow_dispatch:      
@@ -27,9 +27,9 @@ jobs:
       - name: Azure Login
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.SUPPORTBACKEND_AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.SUPPORTBACKEND_AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.SUPPORTBACKEND_AZURE_SUBSCRIPTION_ID }}
+          client-id: ${{ secrets.SUPPORTCONTAINERAPP_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.SUPPORTCONTAINERAPP_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.SUPPORTCONTAINERAPP_AZURE_SUBSCRIPTION_ID }}
 
       - name: Build and push container image to registry
         uses: azure/container-apps-deploy-action@v2
@@ -38,9 +38,9 @@ jobs:
           _dockerfilePathKey_: _dockerfilePath_
           _targetLabelKey_: _targetLabel_
           registryUrl: 
-          registryUsername: ${{ secrets.SUPPORTBACKEND_REGISTRY_USERNAME }}
-          registryPassword: ${{ secrets.SUPPORTBACKEND_REGISTRY_PASSWORD }}
-          containerAppName: support-backend
+          registryUsername: ${{ secrets.SUPPORTCONTAINERAPP_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.SUPPORTCONTAINERAPP_REGISTRY_PASSWORD }}
+          containerAppName: support-container-app
           resourceGroup: test
           imageToBuild: default/[parameters('containerAppName')]:${{ github.sha }}
           _buildArgumentsKey_: |
