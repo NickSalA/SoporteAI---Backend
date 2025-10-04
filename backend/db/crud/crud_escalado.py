@@ -1,5 +1,5 @@
 from backend.db.models import Escalado
-
+from sqlalchemy import select
 def crear_escalado(bd, idTicket: int, id_analista_der, id_analista_soli, motivo: str) -> Escalado:
     try:
         new_escalado = Escalado(
@@ -17,9 +17,8 @@ def crear_escalado(bd, idTicket: int, id_analista_der, id_analista_soli, motivo:
 
 def obtener_escalado_por_ticket(bd, idTicket: int) -> Escalado | None:
     try:
-        escalado = bd.execute(
-            bd.select(Escalado).where(Escalado.id_ticket == idTicket).order_by(Escalado.created_at.desc())
-            ).scalar_one_or_none()
+        query = select(Escalado).where(Escalado.id_ticket == idTicket).order_by(Escalado.created_at.desc())
+        escalado = bd.execute(query).scalar_one_or_none()
         return escalado
     except Exception as e:
         raise ValueError(f"Error al obtener escalado: {str(e)}")

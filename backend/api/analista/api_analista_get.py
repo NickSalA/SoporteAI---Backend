@@ -36,11 +36,12 @@ class TicketRead(BaseModel):
 
 class EscaladoRead(BaseModel):
     id_escalado: int
-    id_ticket: int
-    id_analista_solicitante: str
-    id_analista_derivado: str
+    id_ticket: int 
+    id_analista_solicitante: uuid.UUID | None = None
+    id_analista_derivado: uuid.UUID | None = None
     motivo: str
     created_at: datetime | None = None
+    analista_solicitante_nombre: str | None = None
     model_config = ConfigDict(from_attributes=True, use_enum_values=True)
 
 @analista_get_router.get("/analista/tickets")

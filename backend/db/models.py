@@ -322,6 +322,13 @@ class Escalado(Base, CreateTimestampMixin):
         back_populates="escalados_derivados",
         foreign_keys=[id_analista_derivado],
     )
+    
+    @property
+    def analista_solicitante_nombre(self) -> str | None:
+        if not self.analista_solicitante or not self.analista_solicitante.persona:
+            return None
+        externals = self.analista_solicitante.persona.externals
+        return externals[0].nombre if externals else None
 
     def __repr__(self) -> str:
         return f"<Escalado id={self.id_escalado} ticket={self.id_ticket}>"
