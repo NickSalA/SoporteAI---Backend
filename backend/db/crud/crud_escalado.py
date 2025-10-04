@@ -18,7 +18,7 @@ def crear_escalado(bd, idTicket: int, id_analista_der, id_analista_soli, motivo:
 def obtener_escalado_por_ticket(bd, idTicket: int) -> Escalado | None:
     try:
         escalado = bd.execute(
-            bd.select(Escalado).where(Escalado.id_ticket == idTicket)
+            bd.select(Escalado).where(Escalado.id_ticket == idTicket).order_by(Escalado.created_at.desc())
             ).scalar_one_or_none()
         return escalado
     except Exception as e:
