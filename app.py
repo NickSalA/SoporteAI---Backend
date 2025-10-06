@@ -42,6 +42,7 @@ ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://localhost:9002",
+    "http://localhost:8000",
 ]
 
 # CORS (ajusta origins a tu front real)
@@ -58,7 +59,7 @@ app.add_middleware(
     SessionMiddleware,
     secret_key="cambia-esto-en-prod",
     same_site="lax",  
-    https_only=False,   # pon True en producción HTTPS
+    https_only=True,   # pon True en producción HTTPS
     # session_cookie="support_session",
 )
 
