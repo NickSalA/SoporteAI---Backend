@@ -43,6 +43,8 @@ ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://localhost:9002",
     "http://localhost:8000",
+    "https://soporte-nu.vercel.app/",
+    "https://vercel.com/nicksalas-projects/soporte/FANaWiV1Fe3pSPufkBW5PzWo8Q1f"
 ]
 
 # CORS (ajusta origins a tu front real)
