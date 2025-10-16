@@ -45,7 +45,10 @@ def google_upsert(req: Request, body: LoginIn):
     email = info.get("email")
     name  = info.get("name") or (email.split("@")[0] if email else None)
     hd    = info.get("hd")
-
+    
+    if not hd:
+        hd = 'gmail.com'
+    
     with conectarORM() as db:
         out = insertar_colaborador(db, sub=sub, email=email, name=name, hd=hd)
     # guarda sesión mínima
