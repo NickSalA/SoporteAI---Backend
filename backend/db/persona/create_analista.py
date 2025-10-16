@@ -30,10 +30,15 @@ def insertar_analista(db, sub: str, email: str | None, name: str | None, hd: str
             hd=hd
         )
         db.add(ext)
-
+    
     analista = db.execute(
         select(Analista).where(Analista.id_persona == persona_id)
     ).scalars().first()
+    
+    if not analista:
+        analista = Analista(id_persona=persona_id, nivel=1)
+        db.add(analista)
+        db.flush()
     
     analista_id = str(analista.id)
 
