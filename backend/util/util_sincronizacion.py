@@ -8,7 +8,7 @@ import shutil
 from azure.ai.formrecognizer import DocumentAnalysisClient
 
 # LangChain splitter (mejor que CharacterTextSplitter para RAG)
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 # Helpers propios
 from backend.util.util_documentos import conectarDocumentIntelligence
