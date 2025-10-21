@@ -1,5 +1,6 @@
 from backend.db.models import External, Analista, Persona
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 
 def insertar_analista(db, sub: str, email: str | None, name: str | None, hd: str | None):
     ext = db.execute(
@@ -34,11 +35,21 @@ def insertar_analista(db, sub: str, email: str | None, name: str | None, hd: str
     analista = db.execute(
         select(Analista).where(Analista.id_persona == persona_id)
     ).scalars().first()
-    
+
     if not analista:
-        analista = Analista(id_persona=persona_id, nivel=1)
-        db.add(analista)
-        db.flush()
+        try:
+            analista = Analista(id_persona=persona_id, nivel=1)
+            db.add(analista)
+            db.flush()  # asegura analista.id
+        except IntegrityError:
+            # Otro proceso ganó la carrera: reintentar leyendo
+            db.rollback()
+            analista = db.execute(
+                select(Analista).where(Analista.id_persona == persona_id)
+            ).scalars().first()
+            if not analista:
+                # Si aún no existe, propaga
+                raise
     
     analista_id = str(analista.id)
 
