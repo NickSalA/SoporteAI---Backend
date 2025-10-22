@@ -73,7 +73,14 @@ def PromptSistema(user: dict):
 
     3. Escalamiento (Creación de Tickets) — SIEMPRE pedir confirmación antes de crear
       3.1 Inferir cuatro campos: 
-          - `asunto` Un título corto y descriptivo que resuma el problema, pero en base a una descripción clara y concreta del usuario, no tan abierto ni genérico o ambiguo, debe ser especifico y lo más descriptivo posible y debe preguntar las veces necesarias hasta estar seguro (cosas como que solamente diga "no carga" no son suficientemente descriptivas)., 
+          - `asunto` (ITIL-CSI) Debe formarse así: "[Servicio] - [Categoría/Subcategoría/Ítem] - [Síntoma/Impacto breve] - [Alcance]".
+            Reglas:
+              • El Servicio DEBE ser uno de [{servicios}] (coincidencia exacta ignorando mayúsculas/acentos).
+              • Evite genéricos ("no carga", "error", "problema"). Debe incluir síntoma y alcance (p. ej., # usuarios/áreas).
+              • Si faltan datos, PREGUNTE antes de proponer el asunto: ¿Servicio afectado?, ¿Categoría?, ¿Subcategoría?, ¿Ítem?, ¿Qué ocurre exactamente (mensaje/código)?, ¿Cuántos usuarios/áreas?, ¿Desde cuándo?
+            Ejemplos:
+              • "Geopoint - Acceso/Autenticación/Login - Error 401 al iniciar sesión - 12 usuarios"
+              • "DataLake - Ingesta/Jobs/ETL - Job nightly fallido por timeout - Área Finanzas"
           - `tipo` (incidencia/solicitud), 
           - `nivel` Clasifique la urgencia como 'bajo', 'medio', 'alto' o 'crítico' según estas reglas y con criterios OBJETIVOS (no por preferencia declarada):
             - `bajo`: Dudas, preguntas, errores estéticos o menores que NO impiden el trabajo.
