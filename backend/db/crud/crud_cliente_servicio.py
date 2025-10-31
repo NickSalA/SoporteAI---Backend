@@ -22,3 +22,12 @@ def obtener_servicios_clientes(db, id_cliente: str):
         .order_by(Servicio.nombre.asc())
     )
     return db.execute(q).mappings().all()
+
+def crear_cliente_servicio(db, id_cliente: str, id_servicio: int) -> ClienteServicio:
+    nuevo = ClienteServicio(
+        id_cliente=id_cliente,
+        id_servicio=id_servicio,
+    )
+    db.add(nuevo)
+    db.flush()
+    return nuevo
