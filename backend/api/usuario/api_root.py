@@ -18,7 +18,7 @@ def chat(req: Request, body: ChatIn):
     if saver is None:
         raise HTTPException(500, "server_config: checkpointer ausente")
 
-    orq = AgentsAsTools(user=user, saver=saver)
+    orq = AgentsAsTools(user=user, saver=saver, overrides={})
     # Aseguramos que el thread_id quede persistido en la sesión
     if user.get("thread_id") != orq.user.get("thread_id"):
         user["thread_id"] = orq.user.get("thread_id")
@@ -44,8 +44,8 @@ def reset(req: Request):
     saver = getattr(req.app.state, "checkpointer", None)
     if saver is None:
         raise HTTPException(500, "server_config: checkpointer ausente")
-    
-    orq = AgentsAsTools(user=user, saver=saver)
+
+    orq = AgentsAsTools(user=user, saver=saver, overrides={})
     try:
         user["thread_id"] = orq.agenteOrquestador.reiniciarMemoria()
         req.session["user"] = user

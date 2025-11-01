@@ -18,7 +18,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 #  CONTEXTO: IAnalytics
 # =========================
 
-def PromptSistema(user: dict):
+def PromptSistema(user: dict, overrides: dict = {}):
   user = user or {}
   nombre = user.get("name")
   email = user.get("email")
@@ -35,7 +35,7 @@ def PromptSistema(user: dict):
     """
   )
   
-  identidadObjetivos = (
+  identidadObjetivos_default = (
     f"""
     Identidad y Objetivo
     Usted es un asistente virtual especializado únicamente en soporte de aplicaciones, empresa que tiene soluciones y servicios de Data Science, Big Data, Geo Solutions, Cloud+Apps y Business Platforms y ofrece servicios a instituciones como Entel, Alicorp, BCP, Movistar, Scotiabank, etc.
@@ -44,21 +44,21 @@ def PromptSistema(user: dict):
     """
   )
   
-  contextoConversacion = (
+  contextoConversacion_default = (
     f"""
     Contexto de la Conversación
     En cada solicitud, usted recibe un bloque de `CONTEXTO DEL USUARIO ACTUAL` que contiene su nombre, correo y empresa.
       - Usted DEBE usar esta información para personalizar la conversación. Diríjase al usuario por su nombre"""
   )
   
-  privacidadVerificacion = (
+  privacidadVerificacion_default = (
     f"""
     Privacidad y Verificación (Regla CRÍTICA)
       - Usted ya conoce al usuario. La información del colaborador (nombre, correo, empresa, servicios) se le proporciona automáticamente.
       - NUNCA, BAJO NINGUNA CIRCUNSTANCIA, vuelva a preguntar por su nombre, correo o empresa. Use la información que ya tiene del contexto. Su objetivo es resolver el problema técnico, no verificar su identidad."""
   )
   
-  flujoTrabajo = (
+  flujoTrabajo_default = (
     f"""
     Flujo de Trabajo Obligatorio (Confirmación Amable y Obligatoria)
 
@@ -117,7 +117,7 @@ def PromptSistema(user: dict):
           - Luego use la *Plantilla de Cierre* y finalice.
   """)
   
-  reglasComunicacion = (
+  reglasComunicacion_default = (
     f"""
     Reglas de Comunicación
       - Responder siempre en español y tratando de usted.
@@ -128,7 +128,7 @@ def PromptSistema(user: dict):
       - Siempre cierre con una frase positiva o de apoyo: “¿Le ayudo con algo más?” / “Con gusto le doy más información si lo desea ✨”.
   """)
   
-  formatoBusquedas = (
+  formatoBusquedas_default = (
     f"""
     Formato de Respuesta para Búsquedas (OBLIGATORIO)
       - APLICA a toda búsqueda (listados, tickets y resultados de herramientas).
@@ -142,7 +142,7 @@ def PromptSistema(user: dict):
     """
   )
 
-  formatoTickets = (
+  formatoTickets_default = (
     """
     Formato Específico para Tickets (OBLIGATORIO)
       A) LISTADO DE TICKETS (pedidos tipo: “ver mis tickets”, “todos mis tickets”)
@@ -176,7 +176,7 @@ def PromptSistema(user: dict):
           • Desglose ampliado en viñetas o tabla pequeña (p. ej., campos adicionales, historial, comentarios).
     """
   )
-  plantillaRespuesta = (
+  plantillaRespuesta_default = (
     """
     Plantilla de Respuesta
       - Diagnostico Guiado: “Entiendo la situación, {{NOMBRE}}. Para ayudarle mejor, ¿podría indicarme si la dirección fue ingresada completa (calle, número, ciudad) en el sistema?”
@@ -188,7 +188,16 @@ def PromptSistema(user: dict):
     """
   )
   
-  prompt = ChatPromptTemplate.from_messages([
+  identidadObjetivos     = overrides.get("identidadObjetivos")   or identidadObjetivos_default
+  contextoConversacion   = overrides.get("contextoConversacion") or contextoConversacion_default
+  privacidadVerificacion = overrides.get("privacidadVerificacion") or privacidadVerificacion_default
+  flujoTrabajo           = overrides.get("flujoTrabajo") or flujoTrabajo_default
+  reglasComunicacion     = overrides.get("reglasComunicacion") or reglasComunicacion_default
+  formatoBusquedas       = overrides.get("formatoBusquedas") or formatoBusquedas_default
+  formatoTickets         = overrides.get("formatoTickets") or formatoTickets_default
+  plantillaRespuesta     = overrides.get("plantillaRespuesta") or plantillaRespuesta_default
+
+  messages = [
     ("system", informacionDelUsuario),  
     ("system", identidadObjetivos),
     ("system", contextoConversacion),
@@ -198,18 +207,22 @@ def PromptSistema(user: dict):
     ("system", formatoBusquedas),
     ("system", formatoTickets),
     ("system", plantillaRespuesta),
-    MessagesPlaceholder(variable_name="messages"),
-  ])
-  return prompt
+  ]
+  
+  messages.append(MessagesPlaceholder(variable_name="messages"))
+
+  return ChatPromptTemplate.from_messages(messages)
+
 
 # =========================
 #  AGENTE ORQUESTADOR
 # =========================
 class AgentsAsTools:
-  def __init__(self, user, saver):
+  def __init__(self, user, saver, overrides):
     self.llm = obtenerModelo()
     self.user = user
-
+    self.overrides = overrides
+    
     def obtenerSesion():
       return self.user
 
@@ -237,7 +250,7 @@ class AgentsAsTools:
         CrearTicket_Tool,     # Crear ticket
         *BuscarTicket_Tool,   # Tools de búsqueda/listado
       ],
-      contexto=PromptSistema(self.user),
+      contexto=PromptSistema(self.user, self.overrides),
     )
 
   def enviarMensaje(self, consulta: str = ""):

@@ -332,3 +332,15 @@ class Escalado(Base, CreateTimestampMixin):
 
     def __repr__(self) -> str:
         return f"<Escalado id={self.id_escalado} ticket={self.id_ticket}>"
+
+class Prompt(Base, CreateTimestampMixin):
+    __tablename__ = "promptnick"
+    __table_args__ = (Index("idx_prompt", "id_prompt"),)
+    id_prompt: Mapped[int] = mapped_column(
+        BigInteger, primary_key=True, autoincrement=True
+    )
+    nombre: Mapped[str] = mapped_column(Text, primary_key=True)
+    contenido: Mapped[dict] = mapped_column(JSONB, nullable=False)
+    
+    def __repr__(self) -> str:
+        return f"<Prompt id={self.nombre} contenido={self.contenido!r}>"
