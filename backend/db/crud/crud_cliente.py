@@ -40,9 +40,12 @@ def actualizar_cliente(db, id_cliente: str, nombre: Optional[str] = "", dominio:
     return cliente
 
 def eliminar_cliente(db, id_cliente: str):
-    cliente = db.execute(select(Cliente).where(Cliente.id == id_cliente)).scalar_one_or_none()
-    if not cliente:
-        raise ValueError("Cliente no encontrado")
-    db.delete(cliente)
-    db.flush()
-    return True
+    try:
+        cliente = db.execute(select(Cliente).where(Cliente.id == id_cliente)).scalar_one_or_none()
+        if not cliente:
+            return False
+        db.delete(cliente)
+        db.flush()
+        return True
+    except Exception as e:
+        raise ValueError(f"Error al eliminar cliente: {str(e)}")

@@ -102,11 +102,6 @@ def actualizar_analista(db, id: str, nivel: Optional[int] = None) -> Analista:
         raise ValueError(f"Error al actualizar analista: {str(e)}")
     
 def eliminar_analista(db, id: str) -> bool:
-    """Elimina un analista por ID.
-
-    Comportamiento idempotente: si el analista no existe, retorna False sin lanzar excepción.
-    Retorna True cuando se elimina correctamente.
-    """
     try:
         analista = db.execute(select(Analista).where(Analista.id == id)).scalar_one_or_none()
         if not analista:

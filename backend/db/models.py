@@ -105,7 +105,9 @@ class Cliente(Base, UUIDMixin):
     
     def __repr__(self) -> str:
         return f"<Cliente id={self.id} nombre={self.nombre!r}>"
-
+    @property
+    def dominio(self) -> str:
+        return self.dominios[0].dominio if self.dominios else ""
 class Servicio(Base, UUIDMixin):
     __tablename__ = "servicio"
     nombre: Mapped[str] = mapped_column(Text, nullable=False)
