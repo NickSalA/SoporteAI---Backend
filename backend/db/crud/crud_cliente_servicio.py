@@ -31,3 +31,16 @@ def crear_cliente_servicio(db, id_cliente: str, id_servicio: int) -> ClienteServ
     db.add(nuevo)
     db.flush()
     return nuevo
+
+def eliminar_servicio_cliente(db, id_cliente: str, id_servicio: int):
+    fila = db.execute(
+        select(ClienteServicio).where(
+            ClienteServicio.id_cliente == id_cliente,
+            ClienteServicio.id_servicio == id_servicio,
+        )
+    ).scalar_one_or_none()
+    if not fila:
+        raise ValueError("Servicio del cliente no encontrado")
+    db.delete(fila)
+    db.flush()
+    return True

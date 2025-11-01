@@ -4,7 +4,7 @@ from backend.db.models import Analista, Ticket
 # SQLAlchemy
 from sqlalchemy import func, String, cast
 from sqlalchemy import select
-
+from typing import Optional
 import enum
 
 def obtener_analistas(db) :
@@ -90,3 +90,20 @@ def obtener_analista(db):
     )
     analista = db.execute(q).scalars().first()
     return analista
+
+def actualizar_analista(db, id: str, nivel: Optional[int] = None):
+    try:
+        analista = db.execute(select(Analista).where(Analista.id == id)).scalar_one()
+        if nivel is not None:
+            analista.nivel = nivel
+        db.flush()
+    except Exception as e:
+        raise ValueError(f"Error al actualizar analista: {str(e)}")
+    
+def eliminar_analista(db, id: str):
+    try:
+        analista = db.execute(select(Analista).where(Analista.id == id)).scalar_one()
+        db.delete(analista)
+        db.flush()
+    except Exception as e:
+        raise ValueError(f"Error al eliminar analista: {str(e)}")

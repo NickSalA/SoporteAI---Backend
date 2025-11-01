@@ -3,6 +3,9 @@ from fastapi import APIRouter, Request, HTTPException
 
 from backend.db.crud.crud_prompt import obtener_prompt
 from backend.db.crud.crud_analista import obtener_analistas
+from backend.db.crud.crud_cliente import obtener_clientes
+from backend.db.crud.crud_servicio import obtener_servicios
+from backend.db.crud.crud_cliente_servicio import obtener_servicios_clientes
 from typing import Optional
 from pydantic import BaseModel
 
@@ -21,6 +24,8 @@ class PromptContent(BaseModel):
 
 class Analista(BaseModel):
     id_analista: str
+    nombre: str
+    email: str
     nivel: int
 class Cliente(BaseModel):
     id_cliente: str
@@ -53,15 +58,6 @@ def obtenerAnalistas(req: Request):
             return {"analistas": analistas}
         except Exception as e:
             raise HTTPException(500, f"Error interno: {e}")
-        
-@admin_get_router.get("/administrador/analista/{analista_id}")
-def obtenerAnalista(analista_id: str, req: Request):
-    with conectarORM() as db:
-        try:
-            analista = obtener_analista(db, analista_id)
-            return {"analista": analista}
-        except Exception as e:
-            raise HTTPException(500, f"Error interno: {e}")
 
 @admin_get_router.get("/administrador/clientes")
 def obtenerClientes(req: Request):
@@ -69,15 +65,6 @@ def obtenerClientes(req: Request):
         try:
             clientes = obtener_clientes(db)
             return {"clientes": clientes}
-        except Exception as e:
-            raise HTTPException(500, f"Error interno: {e}")
-
-@admin_get_router.get("/administrador/cliente/{cliente_id}")
-def obtenerCliente(cliente_id: str, req: Request):
-    with conectarORM() as db:
-        try:
-            cliente = obtener_cliente(db, cliente_id)
-            return {"cliente": cliente}
         except Exception as e:
             raise HTTPException(500, f"Error interno: {e}")
 
@@ -90,4 +77,11 @@ def obtenerServicios(req: Request):
         except Exception as e:
             raise HTTPException(500, f"Error interno: {e}")
 
-@admin_get_router.get("/administrador/servicio/{servicio_id}")
+@admin_get_router.get("/administrador/servicios_clientes")
+def obtenerServiciosClientes(req: Request, id_cliente: str):
+    with conectarORM() as db:
+        try:
+            servicios_clientes = obtener_servicios_clientes(db, id_cliente)
+            return {"servicios_clientes": servicios_clientes}
+        except Exception as e:
+            raise HTTPException(500, f"Error interno: {e}")
