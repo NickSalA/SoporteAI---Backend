@@ -335,8 +335,8 @@ class Escalado(Base, CreateTimestampMixin):
 
 class Prompt(Base, CreateTimestampMixin):
     __tablename__ = "promptnick"
-    __table_args__ = (Index("idx_prompt", "id_prompt"),)
-    id_prompt: Mapped[int] = mapped_column(
+    __table_args__ = (Index("idx_prompt", "id"),)
+    id: Mapped[int] = mapped_column(
         BigInteger, primary_key=True, autoincrement=True
     )
     nombre: Mapped[str] = mapped_column(Text, primary_key=True)

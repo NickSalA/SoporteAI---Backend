@@ -15,6 +15,8 @@ from backend.api.auth.api_auth_analista import auth_analista_router
 from backend.api.analista.api_analista_get import analista_get_router
 from backend.api.analista.api_analista_patch import analista_patch_router
 from backend.api.usuario.api_root import chat_router
+from backend.api.administrador.api_administrador_get import admin_get_router
+from backend.api.administrador.api_administrador_patch import admin_patch_router
 
 # Utilitario de conexión al checkpointer
 from backend.util.util_base_de_datos import obtenerConexionBaseDeDatos 
@@ -71,6 +73,8 @@ app.include_router(auth_analista_router,  prefix="/auth",       tags=["auth"])
 app.include_router(chat_router,                                 tags=["chat"])
 app.include_router(analista_get_router,                         tags=["analista"])
 app.include_router(analista_patch_router,                       tags=["analista"])
+app.include_router(admin_get_router,                            tags=["administrador"])
+app.include_router(admin_patch_router,                          tags=["administrador"])
 
 @app.get("/")
 def home():

@@ -188,14 +188,14 @@ def PromptSistema(user: dict, overrides: dict = {}):
     """
   )
   
-  identidadObjetivos     = overrides.get("identidadObjetivos")   or identidadObjetivos_default
-  contextoConversacion   = overrides.get("contextoConversacion") or contextoConversacion_default
+  identidadObjetivos     = overrides.get("identidadObjetivos")     or identidadObjetivos_default
+  contextoConversacion   = overrides.get("contextoConversacion")   or contextoConversacion_default
   privacidadVerificacion = overrides.get("privacidadVerificacion") or privacidadVerificacion_default
-  flujoTrabajo           = overrides.get("flujoTrabajo") or flujoTrabajo_default
-  reglasComunicacion     = overrides.get("reglasComunicacion") or reglasComunicacion_default
-  formatoBusquedas       = overrides.get("formatoBusquedas") or formatoBusquedas_default
-  formatoTickets         = overrides.get("formatoTickets") or formatoTickets_default
-  plantillaRespuesta     = overrides.get("plantillaRespuesta") or plantillaRespuesta_default
+  flujoTrabajo           = overrides.get("flujoTrabajo")           or flujoTrabajo_default
+  reglasComunicacion     = overrides.get("reglasComunicacion")     or reglasComunicacion_default
+  formatoBusquedas       = overrides.get("formatoBusquedas")       or formatoBusquedas_default
+  formatoTickets         = overrides.get("formatoTickets")         or formatoTickets_default
+  plantillaRespuesta     = overrides.get("plantillaRespuesta")     or plantillaRespuesta_default
 
   messages = [
     ("system", informacionDelUsuario),  
