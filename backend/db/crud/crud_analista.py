@@ -91,19 +91,28 @@ def obtener_analista(db):
     analista = db.execute(q).scalars().first()
     return analista
 
-def actualizar_analista(db, id: str, nivel: Optional[int] = None):
+def actualizar_analista(db, id: str, nivel: Optional[int] = None) -> Analista:
     try:
         analista = db.execute(select(Analista).where(Analista.id == id)).scalar_one()
         if nivel is not None:
             analista.nivel = nivel
         db.flush()
+        return analista
     except Exception as e:
         raise ValueError(f"Error al actualizar analista: {str(e)}")
     
-def eliminar_analista(db, id: str):
+def eliminar_analista(db, id: str) -> bool:
+    """Elimina un analista por ID.
+
+    Comportamiento idempotente: si el analista no existe, retorna False sin lanzar excepción.
+    Retorna True cuando se elimina correctamente.
+    """
     try:
-        analista = db.execute(select(Analista).where(Analista.id == id)).scalar_one()
+        analista = db.execute(select(Analista).where(Analista.id == id)).scalar_one_or_none()
+        if not analista:
+            return False
         db.delete(analista)
         db.flush()
+        return True
     except Exception as e:
         raise ValueError(f"Error al eliminar analista: {str(e)}")

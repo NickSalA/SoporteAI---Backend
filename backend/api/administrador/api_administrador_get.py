@@ -65,7 +65,8 @@ def obtenerClientes(req: Request):
     with conectarORM() as db:
         try:
             clientes = obtener_clientes(db)
-            return {"clientes": clientes}
+            data = [Cliente.model_validate(c).model_dump() for c in clientes]
+            return {"clientes": data}
         except Exception as e:
             raise HTTPException(500, f"Error interno: {e}")
 
@@ -74,7 +75,8 @@ def obtenerServicios(req: Request):
     with conectarORM() as db:
         try:
             servicios = obtener_servicios(db)
-            return {"servicios": servicios}
+            data = [Servicio.model_validate(s).model_dump() for s in servicios]
+            return {"servicios": data}
         except Exception as e:
             raise HTTPException(500, f"Error interno: {e}")
 
