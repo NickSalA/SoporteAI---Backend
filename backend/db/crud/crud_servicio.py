@@ -19,14 +19,15 @@ def obtener_servicio_nombre(db, nombre: str) -> Servicio | None:
     return servicio
 
 def eliminar_servicio(db, id_servicio: str):
-    servicio = db.execute(
-        select(Servicio).where(Servicio.id == id_servicio)
-    ).scalar_one_or_none()
-    if not servicio:
-        raise ValueError("Servicio no encontrado")
-    db.delete(servicio)
-    db.flush()
-    return True
+    try:
+        servicio = db.execute(select(Servicio).where(Servicio.id == id_servicio)).scalar_one_or_none()
+        if not servicio:
+            return False
+        db.delete(servicio)
+        db.flush()
+        return True
+    except Exception as e:
+        raise ValueError(f"Error al eliminar servicio: {str(e)}")
 
 def actualizar_servicio(db, id_servicio: str, nombre: Optional[str] = None) -> Servicio:
     servicio = db.execute(
