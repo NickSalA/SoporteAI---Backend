@@ -1,7 +1,7 @@
 from backend.db.crud.crud_prompt import obtener_prompt, actualizar_prompt
 #from backend.db.crud.crud_analista import eliminar_analista, obtener_analistas, actualizar_analista
 #from backend.db.crud.crud_cliente import eliminar_cliente, obtener_clientes, crear_cliente
-from backend.db.crud.crud_servicio import obtener_servicios, crear_servicio, actualizar_servicio, eliminar_servicio
+#from backend.db.crud.crud_servicio import obtener_servicios, crear_servicio, actualizar_servicio, eliminar_servicio
 from backend.util.util_conectar_orm import conectarORM
 
 def test():

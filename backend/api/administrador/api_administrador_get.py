@@ -50,7 +50,7 @@ def obtenerPrompt(req: Request):
 
     return {"ok": True, "overrides": req.session["overrides"]}
 
-@admin_get_router.get("/administrador/analistas")
+@admin_get_router.post("/administrador/analistas")
 def obtenerAnalistas(req: Request):
     with conectarORM() as db:
         try:
@@ -60,7 +60,7 @@ def obtenerAnalistas(req: Request):
         except Exception as e:
             raise HTTPException(500, f"Error interno: {e}")
 
-@admin_get_router.get("/administrador/clientes")
+@admin_get_router.post("/administrador/clientes")
 def obtenerClientes(req: Request):
     with conectarORM() as db:
         try:
@@ -70,7 +70,7 @@ def obtenerClientes(req: Request):
         except Exception as e:
             raise HTTPException(500, f"Error interno: {e}")
 
-@admin_get_router.get("/administrador/servicios")
+@admin_get_router.post("/administrador/servicios")
 def obtenerServicios(req: Request):
     with conectarORM() as db:
         try:
@@ -80,7 +80,7 @@ def obtenerServicios(req: Request):
         except Exception as e:
             raise HTTPException(500, f"Error interno: {e}")
 
-@admin_get_router.get("/administrador/servicios_clientes")
+@admin_get_router.post("/administrador/servicios_clientes")
 def obtenerServiciosClientes(req: Request, id_cliente: str):
     with conectarORM() as db:
         try:
