@@ -157,6 +157,8 @@ class Analista(Base, UUIDMixin):
     @property 
     def nombre(self) -> str | None:
         return self.persona.externals[0].nombre if self.persona and self.persona.externals else None
+
+    @property
     def email(self) -> str | None:
         if not self.persona:
             return None

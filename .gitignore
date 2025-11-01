@@ -65,4 +65,4 @@ venv/
 
 # testing
 
-pruebitasDB2.py
+test.py
