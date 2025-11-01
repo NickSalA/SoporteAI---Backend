@@ -12,6 +12,27 @@ def obtener_cliente_nombre(db, id_cliente: str):
     return result.nombre if result else None
 
 def crear_cliente(db, nombre: str, dominio: str) -> Cliente:
+    # 1) ¿Existe ya el dominio? (PK en cliente_dominio)
+    existente_dom = db.execute(
+        select(ClienteDominio).where(ClienteDominio.dominio == dominio)
+    ).scalar_one_or_none()
+    if existente_dom:
+        # Idempotente: devolvemos el cliente ya vinculado a ese dominio
+        return existente_dom.cliente
+
+    # 2) ¿Existe ya un cliente con ese nombre?
+    existente_cliente = db.execute(
+        select(Cliente).where(Cliente.nombre == nombre)
+    ).scalar_one_or_none()
+
+    if existente_cliente:
+        # Asociar el nuevo dominio a este cliente
+        nuevo_dominio = ClienteDominio(dominio=dominio, cliente=existente_cliente)
+        db.add(nuevo_dominio)
+        db.flush()
+        return existente_cliente
+
+    # 3) Crear cliente y dominio nuevos
     nuevo_cliente = Cliente(nombre=nombre)
     nuevo_dominio = ClienteDominio(dominio=dominio, cliente=nuevo_cliente)
     db.add(nuevo_cliente)
