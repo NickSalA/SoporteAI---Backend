@@ -154,6 +154,14 @@ class Analista(Base, UUIDMixin):
         foreign_keys="Escalado.id_analista_derivado",
         cascade="all, delete-orphan",
     )
+    @property 
+    def nombre(self) -> str | None:
+        return self.persona.externals[0].nombre if self.persona and self.persona.externals else None
+    def email(self) -> str | None:
+        if not self.persona:
+            return None
+        externals = self.persona.externals
+        return externals[0].correo if externals else None
 
 class ClienteDominio(Base):
     __tablename__ = "cliente_dominio"

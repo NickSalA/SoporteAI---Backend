@@ -55,7 +55,8 @@ def obtenerAnalistas(req: Request):
     with conectarORM() as db:
         try:
             analistas = obtener_analistas(db)
-            return {"analistas": analistas}
+            data = [Analista.model_validate(a).model_dump() for a in analistas]
+            return {"analistas": data}
         except Exception as e:
             raise HTTPException(500, f"Error interno: {e}")
 
