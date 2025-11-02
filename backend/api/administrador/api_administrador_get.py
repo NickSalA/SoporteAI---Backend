@@ -33,6 +33,7 @@ class AnalistaModel(BaseModel):
 class Cliente(BaseModel):
     id: uuid.UUID | None = None
     nombre: str
+    dominio: str
     model_config = ConfigDict(from_attributes=True, use_enum_values=True)
 class Servicio(BaseModel):
     id: uuid.UUID | None = None
