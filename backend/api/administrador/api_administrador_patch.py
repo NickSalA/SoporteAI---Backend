@@ -49,12 +49,12 @@ def actualizarPrompt(req: Request, contenido: PromptContent):
     return {"ok": True, "overrides": contenido.model_dump(exclude_none=True)}
 
 @admin_patch_router.patch("/administrador/servicio/crear", response_model=Servicio)
-def crearServicio(payload: Servicio):
+def crearServicio(nombre: str):
     with conectarORM() as db:
         try:
-            if obtener_servicio_nombre(db, payload.nombre):
-                raise HTTPException(400, f"El servicio con nombre '{payload.nombre}' ya existe.")
-            servicio = crear_servicio(db, payload.nombre)
+            if obtener_servicio_nombre(db, nombre):
+                raise HTTPException(400, f"El servicio con nombre '{nombre}' ya existe.")
+            servicio = crear_servicio(db, nombre)
             return servicio
         except Exception as e:
             raise HTTPException(500, f"Error interno: {e}")
