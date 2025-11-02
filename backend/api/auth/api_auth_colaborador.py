@@ -10,12 +10,24 @@ from backend.util.util_conectar_orm import conectarORM
 
 # CRUD
 from backend.db.persona.create_persona import insertar_colaborador
+from backend.db.crud.crud_prompt import obtener_prompt
+
+from typing import Optional
 
 # Helpers
 from backend.util.util_key import obtenerAPI
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 auth_colab_router = APIRouter()
+class PromptContent(BaseModel):
+    # Bloques opcionales: solo incluyes lo que quieras overridear
+    identidadObjetivos: Optional[str] = None
+    reglasComunicacion: Optional[str] = None
+    flujoTrabajo: Optional[str] = None
+    formatoBusquedas: Optional[str] = None
+    formatoTickets: Optional[str] = None
+    plantillaRespuesta: Optional[str] = None
+    model_config = ConfigDict(from_attributes=True, use_enum_values=True)
 class LoginIn(BaseModel):
     id_token: str
 
@@ -51,6 +63,9 @@ def google_upsert(req: Request, body: LoginIn):
     
     with conectarORM() as db:
         out = insertar_colaborador(db, sub=sub, email=email, name=name, hd=hd)
+        contenido = obtener_prompt(db)
+    
+    prompt = PromptContent.model_validate(contenido)
     # guarda sesión mínima
     req.session["user"] = {
         "email": email,
@@ -60,4 +75,7 @@ def google_upsert(req: Request, body: LoginIn):
         "colaborador_id": out["colaborador_id"],
         "rol": "colaborador",
     }
+    
+    req.session["overrides"] = prompt.model_dump(exclude_none=True)
+    
     return {"ok": True, **out}
