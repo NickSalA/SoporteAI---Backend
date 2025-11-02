@@ -52,7 +52,7 @@ def actualizarPrompt(req: Request, contenido: PromptContent):
     set_overrides(req.app, cleaned)
     return {"ok": True, "overrides": cleaned}
 
-@admin_patch_router.patch("/administrador/servicio/crear")
+@admin_patch_router.post("/administrador/servicio/crear")
 def crearServicio(payload: Servicio):
     with conectarORM() as db:
         try:
@@ -92,7 +92,7 @@ def actualizarServicio(id_servicio: str, nombre: str):
             raise HTTPException(500, f"Error interno: {e}")
 
 
-@admin_patch_router.patch("/administrador/servicio/eliminar")
+@admin_patch_router.delete("/administrador/servicio/eliminar")
 def eliminarServicio(id_servicio: str):
     with conectarORM() as db:
         try:
@@ -106,7 +106,7 @@ def eliminarServicio(id_servicio: str):
 
     return {"ok": True, "mensaje": f"Servicio {id_servicio} eliminado correctamente"}
 
-@admin_patch_router.patch("/administrador/cliente/crear")
+@admin_patch_router.post("/administrador/cliente/crear")
 def crearCliente(nombre: str, dominio: str):
     with conectarORM() as db:
         try:
@@ -142,8 +142,7 @@ def actualizarCliente(id_cliente: str, nombre: str, dominio: str):
         except Exception as e:
             raise HTTPException(500, f"Error interno: {e}")
 
-
-@admin_patch_router.patch("/administrador/cliente/eliminar")
+@admin_patch_router.delete("/administrador/cliente/eliminar")
 def eliminarCliente(id_cliente: str):
     with conectarORM() as db:
         try:
@@ -157,7 +156,7 @@ def eliminarCliente(id_cliente: str):
 
     return {"ok": True, "mensaje": f"Cliente {id_cliente} eliminado correctamente"}
 
-@admin_patch_router.patch("/administrador/analista/eliminar")
+@admin_patch_router.delete("/administrador/analista/eliminar")
 def eliminarAnalista(id_analista: str):
     with conectarORM() as db:
         try:
