@@ -7,7 +7,7 @@ from backend.db.crud.crud_cliente import obtener_clientes
 from backend.db.crud.crud_servicio import obtener_servicios
 from backend.db.crud.crud_cliente_servicio import obtener_servicios_clientes
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from backend.util.util_conectar_orm import conectarORM
 
@@ -22,17 +22,21 @@ class PromptContent(BaseModel):
     formatoTickets: Optional[str] = None
     plantillaRespuesta: Optional[str] = None
 
-class Analista(BaseModel):
+class AnalistaModel(BaseModel):
     id_analista: str
     nombre: str
     email: str
     nivel: int
+    model_config = ConfigDict(from_attributes=True)
+    
 class Cliente(BaseModel):
     id_cliente: str
     nombre: str
+    model_config = ConfigDict(from_attributes=True)
 class Servicio(BaseModel):
     id_servicio: str
     nombre: str
+    model_config = ConfigDict(from_attributes=True)
 
 @admin_get_router.get("/administrador/prompt")
 def obtenerPrompt(req: Request):
@@ -55,8 +59,10 @@ def obtenerAnalistas():
     with conectarORM() as db:
         try:
             analistas = obtener_analistas(db)
-            data = [Analista.model_validate(a).model_dump() for a in analistas]
+            data = [AnalistaModel.model_validate(a).model_dump() for a in analistas]
+            print(data)
             return {"analistas": data}
+
         except Exception as e:
             raise HTTPException(500, f"Error interno: {e}")
 
