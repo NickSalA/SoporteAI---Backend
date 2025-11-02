@@ -7,6 +7,7 @@ from backend.db.crud.crud_servicio import crear_servicio, eliminar_servicio, act
 from backend.db.crud.crud_cliente import crear_cliente, eliminar_cliente, actualizar_cliente
 from backend.db.crud.crud_analista import eliminar_analista, actualizar_analista
 from backend.util.util_conectar_orm import conectarORM
+from backend.util.util_overrides import set_overrides
 import uuid
 
 admin_patch_router = APIRouter()
@@ -45,8 +46,11 @@ def actualizarPrompt(req: Request, contenido: PromptContent):
         except Exception as e:
             raise HTTPException(500, f"Error interno: {e}")
 
-    req.session["overrides"] = contenido.model_dump(exclude_none=True)
-    return {"ok": True, "overrides": contenido.model_dump(exclude_none=True)}
+    cleaned = contenido.model_dump(exclude_none=True)
+    req.session["overrides"] = cleaned
+    # Actualizamos cache en memoria
+    set_overrides(req.app, cleaned)
+    return {"ok": True, "overrides": cleaned}
 
 @admin_patch_router.patch("/administrador/servicio/crear")
 def crearServicio(payload: Servicio):

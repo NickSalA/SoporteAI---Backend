@@ -2,7 +2,9 @@ from fastapi import APIRouter, Request, HTTPException
 from pydantic import BaseModel
 
 from backend.flow.AgentAsTools import AgentsAsTools
-from backend.util.util_conectar_orm import obtenerSesion
+from backend.util.util_conectar_orm import obtenerSesion, conectarORM
+from backend.db.crud.crud_prompt import obtener_prompt
+from backend.util.util_overrides import get_overrides
 chat_router = APIRouter()
 
 class ChatIn(BaseModel):
@@ -11,7 +13,11 @@ class ChatIn(BaseModel):
 @chat_router.post("/user/chat")
 def chat(req: Request, body: ChatIn):
     user = obtenerSesion(req)
-    overrides = req.session.get("overrides", {})
+
+    overrides = get_overrides(req.app)
+    if not overrides or not overrides.get("identidadObjetivos"):
+         raise HTTPException(400, "missing_overrides: identidadObjetivos")
+
     if not user or not user.get("persona_id"):
         raise HTTPException(401, "unauthorized")
 
@@ -39,7 +45,7 @@ def chat(req: Request, body: ChatIn):
 @chat_router.post("/user/reset")
 def reset(req: Request):
     user = req.session.get("user")
-    overrides = req.session.get("overrides", {})
+    overrides = get_overrides(req.app)
     if not user or not user.get("persona_id"):
         raise HTTPException(401, "unauthorized")
     

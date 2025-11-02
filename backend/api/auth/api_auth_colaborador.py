@@ -17,6 +17,7 @@ from typing import Optional
 # Helpers
 from backend.util.util_key import obtenerAPI
 from pydantic import BaseModel, ConfigDict
+from backend.util.util_overrides import set_overrides
 
 auth_colab_router = APIRouter()
 class PromptContent(BaseModel):
@@ -76,6 +77,8 @@ def google_upsert(req: Request, body: LoginIn):
         "rol": "colaborador",
     }
     
-    req.session["overrides"] = prompt.model_dump(exclude_none=True)
-    
+    cleaned = prompt.model_dump(exclude_none=True)
+    req.session["overrides"] = cleaned
+    # Actualizamos cache en memoria
+    set_overrides(req.app, cleaned)
     return {"ok": True, **out}

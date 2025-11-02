@@ -10,6 +10,7 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
 from backend.util.util_conectar_orm import conectarORM
+from backend.util.util_overrides import set_overrides
 import uuid
 
 admin_get_router = APIRouter()
@@ -52,7 +53,10 @@ def obtenerPrompt(req: Request):
             raise HTTPException(500, f"Contenido Invalido: {e}")
 
     # Guardamos un dict JSON-serializable (no el modelo) y sin None
-    req.session["overrides"] = prompt.model_dump(exclude_none=True)
+    cleaned = prompt.model_dump(exclude_none=True)
+    req.session["overrides"] = cleaned
+    # Actualizamos cache en memoria
+    set_overrides(req.app, cleaned)
 
     return {"ok": True, "overrides": req.session["overrides"]}
 
