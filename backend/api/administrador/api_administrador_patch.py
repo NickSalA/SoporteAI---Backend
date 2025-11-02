@@ -6,6 +6,7 @@ from backend.db.crud.crud_prompt import actualizar_prompt
 from backend.db.crud.crud_servicio import crear_servicio, eliminar_servicio, actualizar_servicio, obtener_servicio_nombre
 from backend.db.crud.crud_cliente import crear_cliente, eliminar_cliente, actualizar_cliente
 from backend.db.crud.crud_analista import eliminar_analista, actualizar_analista
+from backend.db.crud.crud_cliente_servicio import actualizar_servicios_clientes
 from backend.util.util_conectar_orm import conectarORM
 from backend.util.util_overrides import set_overrides
 import uuid
@@ -178,6 +179,19 @@ def actualizarAnalista(id_analista: str, nivel: int):
             if not actualizado:
                 raise HTTPException(404, f"Analista {id_analista} no encontrado")
             return actualizado
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(500, f"Error interno: {e}")
+
+@admin_patch_router.patch("/administrador/servicios_clientes/actualizar/")
+def actualizarServiciosClientes(id_cliente: str, servicios_clientes: list[str]):
+    with conectarORM() as db:
+        try:
+            actualizado = actualizar_servicios_clientes(db, id_cliente, servicios_clientes)
+            if not actualizado:
+                raise HTTPException(404, f"Cliente {id_cliente} no encontrado")
+            return {"ok": True, "mensaje": f"Servicios del cliente {id_cliente} actualizados correctamente"}
         except HTTPException:
             raise
         except Exception as e:

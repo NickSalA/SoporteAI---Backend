@@ -2,7 +2,7 @@
 from backend.db.models import ClienteServicio, Servicio
 
 # SQLAlchemy
-from sqlalchemy import select
+from sqlalchemy import select, delete
 
 def obtener_clientes_servicios(db):
     filas = db.execute(select(ClienteServicio)).scalars().all()
@@ -12,7 +12,8 @@ def obtener_servicios_clientes(db, id_cliente: str):
     q = (
         select(
             ClienteServicio.id.label("id_cliente_servicio"),
-            Servicio.nombre.label("nombre"),
+            Servicio.id.label("id_servicio"),
+            Servicio.nombre.label("nombre"),    
         )
         .select_from(ClienteServicio)
         .join(Servicio, Servicio.id == ClienteServicio.id_servicio)
@@ -44,3 +45,17 @@ def eliminar_servicio_cliente(db, id_cliente: str, id_servicio: int):
     db.delete(fila)
     db.flush()
     return True
+
+def actualizar_servicios_clientes(db, id_cliente: str, servicios_clientes: list[str]):  
+    # Eliminar servicios existentes
+    db.execute(
+        delete(ClienteServicio).where(ClienteServicio.id_cliente == id_cliente)
+    )
+    # Agregar los nuevos servicios
+    for id_servicio in servicios_clientes:
+        nuevo = ClienteServicio(
+            id_cliente=id_cliente,
+            id_servicio=id_servicio,
+        )
+        db.add(nuevo)
+    db.flush()
