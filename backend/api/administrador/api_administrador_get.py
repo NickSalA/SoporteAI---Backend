@@ -10,6 +10,7 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
 from backend.util.util_conectar_orm import conectarORM
+import uuid
 
 admin_get_router = APIRouter()
 
@@ -23,18 +24,18 @@ class PromptContent(BaseModel):
     plantillaRespuesta: Optional[str] = None
 
 class AnalistaModel(BaseModel):
-    id_analista: str
+    id_analista: uuid.UUID
     nombre: str
     email: str
     nivel: int
     model_config = ConfigDict(from_attributes=True)
     
 class Cliente(BaseModel):
-    id_cliente: str
+    id_cliente: uuid.UUID
     nombre: str
     model_config = ConfigDict(from_attributes=True)
 class Servicio(BaseModel):
-    id_servicio: str
+    id_servicio: uuid.UUID
     nombre: str
     model_config = ConfigDict(from_attributes=True)
 
@@ -71,7 +72,13 @@ def obtenerClientes():
     with conectarORM() as db:
         try:
             clientes = obtener_clientes(db)
-            data = [Cliente.model_validate(c).model_dump() for c in clientes]
+            data = [
+                {
+                    "id_cliente": str(c.id),
+                    "nombre": c.nombre or "",
+                }
+                for c in clientes
+            ]
             return {"clientes": data}
         except Exception as e:
             raise HTTPException(500, f"Error interno: {e}")
@@ -81,7 +88,13 @@ def obtenerServicios():
     with conectarORM() as db:
         try:
             servicios = obtener_servicios(db)
-            data = [Servicio.model_validate(s).model_dump() for s in servicios]
+            data = [
+                {
+                    "id_servicio": str(s.id),
+                    "nombre": s.nombre or "",
+                }
+                for s in servicios
+            ]
             return {"servicios": data}
         except Exception as e:
             raise HTTPException(500, f"Error interno: {e}")
