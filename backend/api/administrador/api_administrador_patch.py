@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Request, HTTPException
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from backend.db.crud.crud_prompt import actualizar_prompt
-from backend.db.crud.crud_servicio import crear_servicio, eliminar_servicio, actualizar_servicio
+from backend.db.crud.crud_servicio import crear_servicio, eliminar_servicio, actualizar_servicio, obtener_servicio_nombre
 from backend.db.crud.crud_cliente import crear_cliente, eliminar_cliente, actualizar_cliente
 from backend.db.crud.crud_analista import eliminar_analista, actualizar_analista
 from backend.util.util_conectar_orm import conectarORM
+import uuid
 
 admin_patch_router = APIRouter()
 
@@ -17,6 +18,23 @@ class PromptContent(BaseModel):
     formatoBusquedas: Optional[str] = None
     formatoTickets: Optional[str] = None
     plantillaRespuesta: Optional[str] = None
+
+class AnalistaModel(BaseModel):
+    id: uuid.UUID | None = None
+    nombre: str
+    email: str
+    nivel: int
+    model_config = ConfigDict(from_attributes=True, use_enum_values=True)
+    
+class Cliente(BaseModel):
+    id: uuid.UUID | None = None
+    nombre: str
+    dominio: str
+    model_config = ConfigDict(from_attributes=True, use_enum_values=True)
+class Servicio(BaseModel):
+    id: uuid.UUID | None = None
+    nombre: str
+    model_config = ConfigDict(from_attributes=True)
 
 @admin_patch_router.patch("/administrador/prompt")
 def actualizarPrompt(req: Request, contenido: PromptContent):
@@ -30,11 +48,13 @@ def actualizarPrompt(req: Request, contenido: PromptContent):
     req.session["overrides"] = contenido.model_dump(exclude_none=True)
     return {"ok": True, "overrides": contenido.model_dump(exclude_none=True)}
 
-@admin_patch_router.patch("/administrador/servicio/crear")
-def crearServicio(nombre: str):
+@admin_patch_router.patch("/administrador/servicio/crear", response_model=Servicio)
+def crearServicio(payload: Servicio):
     with conectarORM() as db:
         try:
-            servicio = crear_servicio(db, nombre)
+            if obtener_servicio_nombre(db, payload.nombre):
+                raise HTTPException(400, f"El servicio con nombre '{payload.nombre}' ya existe.")
+            servicio = crear_servicio(db, payload.nombre)
             return servicio
         except Exception as e:
             raise HTTPException(500, f"Error interno: {e}")
