@@ -35,10 +35,10 @@ def crearServicio(nombre: str):
     with conectarORM() as db:
         try:
             servicio = crear_servicio(db, nombre)
+            return servicio
         except Exception as e:
             raise HTTPException(500, f"Error interno: {e}")
 
-    return {"ok": True, "servicio": {"id_servicio": str(servicio.id), "nombre": servicio.nombre}}
 
 @admin_patch_router.patch("/administrador/servicio/actualizar")
 def actualizarServicio(id_servicio: str, nombre: str):
@@ -47,12 +47,12 @@ def actualizarServicio(id_servicio: str, nombre: str):
             actualizado = actualizar_servicio(db, id_servicio, nombre)
             if not actualizado:
                 raise HTTPException(404, f"Servicio {id_servicio} no encontrado")
+            return actualizado
         except HTTPException:
             raise
         except Exception as e:
             raise HTTPException(500, f"Error interno: {e}")
 
-    return {"ok": True, "mensaje": f"Servicio {id_servicio} actualizado correctamente"}
 
 @admin_patch_router.patch("/administrador/servicio/eliminar")
 def eliminarServicio(id_servicio: str):
@@ -73,10 +73,9 @@ def crearCliente(nombre: str, dominio: str):
     with conectarORM() as db:
         try:
             cliente = crear_cliente(db, nombre, dominio)
+            return cliente
         except Exception as e:
             raise HTTPException(500, f"Error interno: {e}")
-
-    return {"ok": True, "cliente": {"id_cliente": str(cliente.id), "nombre": cliente.nombre}}
 
 @admin_patch_router.patch("/administrador/cliente/actualizar")
 def actualizarCliente(id_cliente: str, nombre: str):
@@ -85,12 +84,12 @@ def actualizarCliente(id_cliente: str, nombre: str):
             actualizado = actualizar_cliente(db, id_cliente, nombre)
             if not actualizado:
                 raise HTTPException(404, f"Cliente {id_cliente} no encontrado")
+            return actualizado
         except HTTPException:
             raise
         except Exception as e:
             raise HTTPException(500, f"Error interno: {e}")
 
-    return {"ok": True, "mensaje": f"Cliente {id_cliente} actualizado correctamente"}
 
 @admin_patch_router.patch("/administrador/cliente/eliminar")
 def eliminarCliente(id_cliente: str):
@@ -127,9 +126,8 @@ def actualizarAnalista(id_analista: str, nivel: int):
             actualizado = actualizar_analista(db, id_analista, nivel)
             if not actualizado:
                 raise HTTPException(404, f"Analista {id_analista} no encontrado")
+            return actualizado
         except HTTPException:
             raise
         except Exception as e:
             raise HTTPException(500, f"Error interno: {e}")
-
-    return {"ok": True, "mensaje": f"Analista {id_analista} actualizado correctamente"}
