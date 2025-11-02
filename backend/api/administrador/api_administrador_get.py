@@ -24,18 +24,18 @@ class PromptContent(BaseModel):
     plantillaRespuesta: Optional[str] = None
     model_config = ConfigDict(from_attributes=True, use_enum_values=True)
 class AnalistaModel(BaseModel):
-    id_analista: uuid.UUID | None = None
+    id: uuid.UUID | None = None
     nombre: str
     email: str
     nivel: int
     model_config = ConfigDict(from_attributes=True, use_enum_values=True)
     
 class Cliente(BaseModel):
-    id_cliente: uuid.UUID | None = None
+    id: uuid.UUID | None = None
     nombre: str
-    model_config = ConfigDict(from_attributes=True, use_enum_values=True    )
+    model_config = ConfigDict(from_attributes=True, use_enum_values=True)
 class Servicio(BaseModel):
-    id_servicio: uuid.UUID | None = None
+    id: uuid.UUID | None = None
     nombre: str
     model_config = ConfigDict(from_attributes=True)
 
