@@ -48,14 +48,22 @@ def actualizarPrompt(req: Request, contenido: PromptContent):
     req.session["overrides"] = contenido.model_dump(exclude_none=True)
     return {"ok": True, "overrides": contenido.model_dump(exclude_none=True)}
 
-@admin_patch_router.patch("/administrador/servicio/crear", response_model=Servicio)
+@admin_patch_router.patch("/administrador/servicio/crear")
 def crearServicio(payload: Servicio):
     with conectarORM() as db:
         try:
             if obtener_servicio_nombre(db, payload.nombre):
                 raise HTTPException(400, f"El servicio con nombre '{payload.nombre}' ya existe.")
             servicio = crear_servicio(db, payload.nombre)
-            return servicio
+            
+            # Convertir a diccionario serializable
+            data = {
+                "id_servicio": str(servicio.id),
+                "nombre": servicio.nombre or "",
+            }
+            return {"ok": True, "servicio": data}
+        except HTTPException:
+            raise
         except Exception as e:
             raise HTTPException(500, f"Error interno: {e}")
 
@@ -67,7 +75,13 @@ def actualizarServicio(id_servicio: str, nombre: str):
             actualizado = actualizar_servicio(db, id_servicio, nombre)
             if not actualizado:
                 raise HTTPException(404, f"Servicio {id_servicio} no encontrado")
-            return actualizado
+            
+            # Convertir a diccionario serializable
+            data = {
+                "id_servicio": str(actualizado.id),
+                "nombre": actualizado.nombre or "",
+            }
+            return {"ok": True, "servicio": data}
         except HTTPException:
             raise
         except Exception as e:
@@ -93,18 +107,32 @@ def crearCliente(nombre: str, dominio: str):
     with conectarORM() as db:
         try:
             cliente = crear_cliente(db, nombre, dominio)
-            return cliente
+            
+            # Convertir a diccionario serializable
+            data = {
+                "id_cliente": str(cliente.id),
+                "nombre": cliente.nombre or "",
+                "dominio": cliente.dominio or "",
+            }
+            return {"ok": True, "cliente": data}
         except Exception as e:
             raise HTTPException(500, f"Error interno: {e}")
 
 @admin_patch_router.patch("/administrador/cliente/actualizar")
-def actualizarCliente(id_cliente: str, nombre: str):
+def actualizarCliente(id_cliente: str, nombre: str, dominio: str):
     with conectarORM() as db:
         try:
-            actualizado = actualizar_cliente(db, id_cliente, nombre)
+            actualizado = actualizar_cliente(db, id_cliente, nombre, dominio)
             if not actualizado:
                 raise HTTPException(404, f"Cliente {id_cliente} no encontrado")
-            return actualizado
+            
+            # Convertir a diccionario serializable
+            data = {
+                "id_cliente": str(actualizado.id),
+                "nombre": actualizado.nombre or "",
+                "dominio": actualizado.dominio or "",
+            }
+            return {"ok": True, "cliente": data}
         except HTTPException:
             raise
         except Exception as e:

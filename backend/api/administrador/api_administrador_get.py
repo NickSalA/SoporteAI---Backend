@@ -77,6 +77,7 @@ def obtenerClientes():
                 {
                     "id_cliente": str(c.id),
                     "nombre": c.nombre or "",
+                    "dominio": c.dominio or "",
                 }
                 for c in clientes
             ]
