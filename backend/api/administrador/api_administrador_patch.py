@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Request, HTTPException
 from typing import Optional
 from pydantic import BaseModel, ConfigDict
+from fastapi import Query
 
 from backend.db.crud.crud_prompt import actualizar_prompt
 from backend.db.crud.crud_servicio import crear_servicio, eliminar_servicio, actualizar_servicio, obtener_servicio_nombre
@@ -184,8 +185,8 @@ def actualizarAnalista(id_analista: str, nivel: int):
         except Exception as e:
             raise HTTPException(500, f"Error interno: {e}")
 
-@admin_patch_router.patch("/administrador/servicios_clientes/actualizar/")
-def actualizarServiciosClientes(id_cliente: str, servicios_clientes: list[str]):
+@admin_patch_router.patch("/administrador/servicios_clientes/actualizar")
+def actualizarServiciosClientes(id_cliente: str, servicios_clientes: list[str] = Query(...)):
     with conectarORM() as db:
         try:
             actualizado = actualizar_servicios_clientes(db, id_cliente, servicios_clientes)
